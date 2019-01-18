@@ -22,6 +22,7 @@ object_script.*.Debug
 *.moc
 moc_*.cpp
 moc_*.h
+moc_*.obj
 qrc_*.cpp
 ui_*.h
 *.qmlc
@@ -41,3 +42,18 @@ target_wrapper.*
 
 # QtCreator CMake
 CMakeLists.txt.user*
+
+#Release
+GraphQlClient/release/
+GraphQlClient/debug/
+
+#ExampleApp Exe
+Example/ExampleApp/ExampleApp.exe
+Example/ExampleApp/ExampleApp.ilk
+Example/ExampleApp/ExampleApp.pdb
+Example/ExampleApp/GraphQlClient/*.lib
+Example/ExampleApp/GraphQlClient/*.exp
+Example/ExampleApp/GraphQlClient/*.ilk
+Example/ExampleApp/GraphQlClient/*.pdb
+Example/ExampleApp/GraphQlClient/qmldir
+Example/ExampleApp/debug/*
