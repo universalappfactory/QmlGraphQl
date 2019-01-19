@@ -43,7 +43,12 @@ Window {
         }
 
         onError: {
-            console.log("Error"); //TODO the httpconnection doesn't have a proper error handling (e.g. for bad request)
+            var resultAsJson = JSON.stringify(error, /*replacer*/ null, /*spacing*/ 2);
+            console.log(resultAsJson)
+
+            console.log("Error: " + error.message); //TODO the httpconnection doesn't have a proper error handling (e.g. for bad request)
+            var msg = "Error:\n\n" + error.message;
+            txtResult.text = msg
         }
     }
 

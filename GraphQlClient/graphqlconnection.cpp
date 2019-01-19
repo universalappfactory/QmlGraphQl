@@ -30,9 +30,10 @@ GraphQlConnection::GraphQlConnection() :
 {
     connect(m_websocketConnection, &GraphQlWebsocketConnection::dataReceived, this, &GraphQlConnection::dataReceived);
     connect(m_websocketConnection, &GraphQlWebsocketConnection::stateChanged, this, &GraphQlConnection::onStateChanged);
-    connect(m_websocketConnection, &GraphQlWebsocketConnection::error, this, &GraphQlConnection::error);
+    connect(m_websocketConnection, &GraphQlWebsocketConnection::error, this, &GraphQlConnection::onConnectionError);
 
     connect(m_httpConnection, &GraphQlHttpConnection::dataReceived, this, &GraphQlConnection::dataReceived);
+    connect(m_httpConnection, &GraphQlHttpConnection::error, this, &GraphQlConnection::onConnectionError);
 }
 
 GraphQlConnection::~GraphQlConnection()
@@ -74,9 +75,9 @@ bool GraphQlConnection::isConnected() const
     return websocketConnectionState() == WebSocketConnectionState::Acknowledged;
 }
 
-void GraphQlConnection::onError(QAbstractSocket::SocketError error)
+void GraphQlConnection::onConnectionError(GraphQlError err)
 {
-    qDebug() << "error" << error;
+    emit error(err.toVariantmap());
 }
 
 void GraphQlConnection::setUrl(const QString &url)

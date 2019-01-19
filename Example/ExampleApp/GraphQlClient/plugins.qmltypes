@@ -45,11 +45,11 @@ Module {
         }
         Signal {
             name: "error"
-            Parameter { name: "error"; type: "QAbstractSocket::SocketError" }
+            Parameter { name: "error"; type: "QVariantMap" }
         }
         Method {
-            name: "onError"
-            Parameter { name: "error"; type: "QAbstractSocket::SocketError" }
+            name: "onConnectionError"
+            Parameter { name: "err"; type: "GraphQlError" }
         }
         Method {
             name: "setUrl"
@@ -64,22 +64,6 @@ Module {
             Parameter { name: "query"; type: "string" }
         }
         Method { name: "open" }
-    }
-    Component {
-        name: "MyItem"
-        defaultProperty: "data"
-        prototype: "QQuickItem"
-        exports: ["MyItem 1.0"]
-        exportMetaObjectRevisions: [0]
-        Property { name: "name"; type: "string" }
-        Signal {
-            name: "nameChanged"
-            Parameter { name: "name"; type: "string" }
-        }
-        Method {
-            name: "setName"
-            Parameter { name: "name"; type: "string" }
-        }
     }
     Component {
         name: "QQuickItem"

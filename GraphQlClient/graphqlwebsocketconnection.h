@@ -22,6 +22,7 @@
 #include <QString>
 #include <QVariantMap>
 #include "operationmessage.h"
+#include "graphqlerror.h"
 
 class GraphQlWebsocketConnection : public QObject
 {
@@ -48,7 +49,7 @@ public:
 signals:
     void connected();
     void dataReceived(QVariantMap data);
-    void error(QAbstractSocket::SocketError error);
+    void error(GraphQlError error);
     void closed();
     void stateChanged(ConnectionState state);
 

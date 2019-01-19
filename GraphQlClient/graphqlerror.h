@@ -14,38 +14,25 @@
     You should have received a copy of the GNU General Public License
     along with QmlGraphQl.  If not, see <https://www.gnu.org/licenses/>.
 */
-#ifndef MYITEM_H
-#define MYITEM_H
 
-#include <QQuickItem>
+#ifndef GRAPHQLERROR_H
+#define GRAPHQLERROR_H
 
-class MyItem : public QQuickItem
+#include <QString>
+#include <QVariantMap>
+
+class GraphQlError
 {
-    Q_OBJECT
-    Q_DISABLE_COPY(MyItem)
-
-    QString m_name;
+private:
+    QString m_message;
 
 public:
-    MyItem(QQuickItem *parent = nullptr);
-    ~MyItem();
+    GraphQlError(const QString &message);
 
-    Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-    QString name() const
-    {
-        return m_name;
-    }
-public slots:
-    void setName(QString name)
-    {
-        if (m_name == name)
-            return;
+    QString message() const;
+    void setMessage(const QString &message);
 
-        m_name = name;
-        emit nameChanged(m_name);
-    }
-signals:
-    void nameChanged(QString name);
+    QVariantMap toVariantmap();
 };
 
-#endif // MYITEM_H
+#endif // GRAPHQLERROR_H

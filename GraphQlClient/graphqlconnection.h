@@ -52,7 +52,7 @@ public:
     bool isConnected() const;
 
 public slots:
-    void onError(QAbstractSocket::SocketError error);
+    void onConnectionError(GraphQlError err);
     void setUrl(const QString &url);
     void onStateChanged(GraphQlWebsocketConnection::ConnectionState state);
 
@@ -62,7 +62,7 @@ Q_SIGNALS:
     void urlChanged(QString url);
     void dataReceived(QVariantMap data);
     void websocketConnectionStateChanged(WebSocketConnectionState state);
-    void error(QAbstractSocket::SocketError error);
+    void error(QVariantMap error);
 
 private:
      QString m_url;

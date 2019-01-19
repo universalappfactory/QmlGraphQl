@@ -1,2 +1,3 @@
 module GraphQlClient
 plugin graphqlclient
+typeinfo plugins.qmltypes

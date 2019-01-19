@@ -15,18 +15,31 @@
     along with QmlGraphQl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "myitem.h"
+#include "graphqlerror.h"
+#include <QString>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QDebug>
 
-MyItem::MyItem(QQuickItem *parent):
-    QQuickItem(parent), m_name("Hallo Welt")
+QString GraphQlError::message() const
 {
-    // By default, QQuickItem does not draw anything. If you subclass
-    // QQuickItem to create a visual item, you will need to uncomment the
-    // following line and re-implement updatePaintNode()
-
-    // setFlag(ItemHasContents, true);
+    return m_message;
 }
 
-MyItem::~MyItem()
+void GraphQlError::setMessage(const QString &message)
+{
+    m_message = message;
+}
+
+QVariantMap GraphQlError::toVariantmap()
+{
+    QString json = "{ \"message\": \"" + m_message + +"\"}";
+
+    QJsonDocument doc = QJsonDocument::fromJson(json.toUtf8());
+    return doc.object().toVariantMap();
+}
+
+GraphQlError::GraphQlError(const QString &message) :
+    m_message(message)
 {
 }

@@ -53,6 +53,7 @@ void GraphQlHttpConnection::onFinished(QNetworkReply *reply)
     if (reply->error()) {
         qDebug() << "ERROR!";
         qDebug() << reply->errorString();
+        emit error(reply->errorString());
     } else {
         QByteArray data = reply->readAll();
         QJsonDocument response = QJsonDocument::fromJson(data);

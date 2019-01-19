@@ -39,6 +39,15 @@ import GraphQlClient 1.0
             //or like this
             //console.log(data["data"]["allFilms"]["films"][0]["title"])
         }
+
+        onError: {
+            var resultAsJson = JSON.stringify(error, /*replacer*/ null, /*spacing*/ 2);
+            console.log(resultAsJson)
+
+            console.log("Error: " + error.message); //TODO the httpconnection doesn't have a proper error handling (e.g. for bad request)
+            var msg = "Error:\n\n" + error.message;
+            txtResult.text = msg
+        }
     }
 
     //Execute a query
@@ -86,15 +95,16 @@ docker run -p 9000:4000 graphql/apollo
 To create the example app, you need to open both projects (ExampleApp.pro and graphqlclient.pro) in QtCreator.
 
 Then build the graphqlclient.pro, this will create a directory "GraphQlClient" under the ExampleApp folder. This is necessary so that the ExampleApp is able to find the plugin.
+I disabled the "Shadow Build" for both, example app and graphqlclient.
 
 (See <http://doc.qt.io/qt-5/qtqml-modules-cppplugins.html>)
 
 
 # Issues
 
-Code completition for client properties does not work properly, even if I created a qmltypes file for the plugin.
+Sometimes I have some problems with code completition for the plugin in QtCreator
 
-Error handling for the httpclient isn't implemented yet.
+~~Error handling for the httpclient isn't implemented yet.~~
 
 
 

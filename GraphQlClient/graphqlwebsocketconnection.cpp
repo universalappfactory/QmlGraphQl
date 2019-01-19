@@ -19,6 +19,7 @@
 #include <QJsonDocument>
 #include <QDebug>
 #include "graphqlwebsocketconnection.h"
+#include "graphqlerror.h"
 
 void GraphQlWebsocketConnection::setUrl(const QString &url)
 {
@@ -100,7 +101,6 @@ void GraphQlWebsocketConnection::emitDataReceived(const OperationMessage &messag
     qDebug() << message.toJson();
 
     QJsonDocument doc = QJsonDocument::fromVariant(message.payload());
-    qDebug() << doc.toJson();
     emit dataReceived(doc.object().toVariantMap());
 }
 
@@ -113,7 +113,8 @@ void GraphQlWebsocketConnection::onError(QAbstractSocket::SocketError socktError
     if (m_webSocket.state() == QAbstractSocket::SocketState::ConnectedState)
         m_webSocket.close();
 
-    emit error(socktError);
+    GraphQlError err = GraphQlError(m_webSocket.errorString());
+    emit error(err);
 }
 
 QString GraphQlWebsocketConnection::url() const

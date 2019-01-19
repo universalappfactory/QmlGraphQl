@@ -36,6 +36,7 @@ public:
 
 signals:
     void dataReceived(QVariantMap data);
+    void error(QString error);
 
 public slots:
 

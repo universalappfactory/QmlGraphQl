@@ -10,21 +10,21 @@ DESTDIR = ../Example/ExampleApp/GraphQlClient
 # Input
 SOURCES += \
         graphqlclient_plugin.cpp \
-        myitem.cpp \
     graphqlconnection.cpp \
     graphqlhttpconnection.cpp \
     graphqlwebsocketconnection.cpp \
     operationmessage.cpp \
-    queryrequestdto.cpp
+    queryrequestdto.cpp \
+    graphqlerror.cpp
 
 HEADERS += \
         graphqlclient_plugin.h \
-        myitem.h \
     graphqlconnection.h \
     graphqlhttpconnection.h \
     graphqlwebsocketconnection.h \
     operationmessage.h \
-    queryrequestdto.h
+    queryrequestdto.h \
+    graphqlerror.h
 
 DISTFILES = qmldir
 
