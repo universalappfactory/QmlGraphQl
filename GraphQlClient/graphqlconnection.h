@@ -41,6 +41,7 @@ public:
     Q_ENUM(WebSocketConnectionState)
 
     Q_INVOKABLE void query(const QString &query);
+    Q_INVOKABLE void mutate(const QString &mutation);
     Q_INVOKABLE void open();
     Q_PROPERTY(QString url READ url WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(WebSocketConnectionState websocketConnectionState READ websocketConnectionState NOTIFY websocketConnectionStateChanged)

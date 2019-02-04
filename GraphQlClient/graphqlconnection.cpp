@@ -55,6 +55,19 @@ void GraphQlConnection::query(const QString &query)
     m_websocketConnection->sendMessage(OperationMessage::ConnectionStartMessage(QueryRequestDto(query).toJsonObject()));
 }
 
+void GraphQlConnection::mutate(const QString &mutation)
+{
+    if (websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
+        qDebug() << "connection is not acknowledged, doing http request";
+
+        m_httpConnection->sendMessage(QueryRequestDto(mutation));
+        return;
+    }
+
+    qDebug() << "mutate: " << mutation;
+    m_websocketConnection->sendMessage(OperationMessage::ConnectionStartMessage(QueryRequestDto(mutation).toJsonObject()));
+}
+
 void GraphQlConnection::open()
 {
     m_websocketConnection->open();

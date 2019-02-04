@@ -44,7 +44,7 @@ import GraphQlClient 1.0
             var resultAsJson = JSON.stringify(error, /*replacer*/ null, /*spacing*/ 2);
             console.log(resultAsJson)
 
-            console.log("Error: " + error.message); //TODO the httpconnection doesn't have a proper error handling (e.g. for bad request)
+            console.log("Error: " + error.message);
             var msg = "Error:\n\n" + error.message;
             txtResult.text = msg
         }
@@ -68,11 +68,13 @@ import GraphQlClient 1.0
 
 # Starting a GraphQL Server using Docker
 
-If you want to start a graphql example server locally using docker you may use one of the two docker files to build a docker container.
+If you want to start a graphql example server locally using docker, you may use one of the docker files to build a docker container.
 
 The first one uses the [SWAPI GraphQL Wrapper](https://github.com/graphql/swapi-graphql)
 
 The second one the [Apollo GraphQL server example](https://github.com/apollographql/graphql-server-example)
+
+And the third one the [Apollo GraphQL star-wars server example](https://github.com/apollographql/starwars-server)
 
 
 ```Bash
@@ -82,11 +84,18 @@ docker build SwapiDocker -t graphql/swapi
 #or
 docker build ApolloGraphQLDocker -t graphql/apollo
 
-#run (available under localhost:9000/playground)
+#or
+docker build ApolloStarWarsGraphQLDocker -t apollo/starwars
+
+
+#run (graphiql is available under localhost:9000/playground, use localhost:9000 as url for the client)
 docker run -p 9000:8080 graphql/swapi
 
-#or (available under localhost:9000/graphql)
+#or (graphiql is available under localhost:9000/playground, use localhost:9000 as url for the client)
 docker run -p 9000:4000 graphql/apollo
+
+#or (graphiql is available under http://localhost:9000/graphql, use http://localhost:9000/graphql as url for the client)
+docker run -p 9000:4000 apollo/starwars
 
 ```
 
@@ -99,10 +108,35 @@ I disabled the "Shadow Build" for both, example app and graphqlclient.
 
 (See <http://doc.qt.io/qt-5/qtqml-modules-cppplugins.html>)
 
+# Mutations
+
+A mutation query to the server is pretty much the same as a "normal" query.
+E.g with the apollo star wars server you can already do a mutation like this:
+
+```QML
+    ...
+    
+    gql.query("mutation {createReview(episode: EMPIRE, review: {stars: 3}){episode,stars}}")
+
+    ...
+```
+
+But in order to have a distinction in the ui there is also a "mutate" function.
+
+```QML
+    ...
+    
+    gql.mutate("mutation {createReview(episode: EMPIRE, review: {stars: 3}){episode,stars}}")
+
+    ...
+```
+
 
 # Issues
 
 Sometimes I have some problems with code completition for the plugin in QtCreator
+
+Query variables are not working at the moment
 
 ~~Error handling for the httpclient isn't implemented yet.~~
 

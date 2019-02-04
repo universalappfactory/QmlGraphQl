@@ -26,7 +26,8 @@ Window {
 
     GraphQlConnection {
         id: gql
-        url: "http://localhost:9000/"
+        url: "http://localhost:9000/graphql"
+        //url: "http://localhost:9000/"
 
         onDataReceived: {
             //result data is available as json object
@@ -46,7 +47,7 @@ Window {
             var resultAsJson = JSON.stringify(error, /*replacer*/ null, /*spacing*/ 2);
             console.log(resultAsJson)
 
-            console.log("Error: " + error.message); //TODO the httpconnection doesn't have a proper error handling (e.g. for bad request)
+            console.log("Error: " + error.message);
             var msg = "Error:\n\n" + error.message;
             txtResult.text = msg
         }
@@ -85,6 +86,21 @@ Window {
                 font.pixelSize: 14
                 onClicked: executeSearch();
             }
+
+            //Example for a mutation (this is a query for the apollo graphql starwars server)
+            /*
+            Button {
+                text: "Mutate"
+                Layout.preferredHeight: txtSearchQuery.height
+                font.pixelSize: 14
+                onClicked: {
+                    var mutation = "mutation {createReview(episode: EMPIRE, review: {stars: 3}){episode,stars}}";
+                    console.log("mutate: " + mutation);
+                    gql.mutate(mutation);
+                }
+            }
+            */
+
         } //RowLayout
 
         Rectangle {
