@@ -49,6 +49,11 @@ QByteArray OperationMessage::toByteArray() const
     return toJson().toUtf8();
 }
 
+QVariantMap OperationMessage::toVariantMap() const
+{
+    return toJsonDocument().object().toVariantMap();
+}
+
 OperationMessage OperationMessage::fromJson(const QByteArray &value)
 {
     QJsonDocument doc = QJsonDocument::fromJson(value);
@@ -58,7 +63,6 @@ OperationMessage OperationMessage::fromJson(const QByteArray &value)
     QVariant payload = doc["payload"].isNull() ? QVariant() : doc["payload"].toVariant();
 
     QJsonDocument payloadDoc = QJsonDocument::fromVariant(payload);
-
     return OperationMessage(id, type, payloadDoc.object());
 }
 
@@ -93,6 +97,12 @@ OperationMessage::OperationMessage(const QString &type) : OperationMessage(QStri
 
 QString OperationMessage::toJson() const
 {
+    auto doc = toJsonDocument();
+    return doc.toJson(QJsonDocument::Compact);
+}
+
+QJsonDocument OperationMessage::toJsonDocument() const
+{
     QJsonObject object
     {
         {"id", m_id},
@@ -100,6 +110,5 @@ QString OperationMessage::toJson() const
         {"payload", QJsonValue(m_payload)},
     };
 
-    QJsonDocument doc(object);
-    return doc.toJson(QJsonDocument::Compact);
+    return QJsonDocument(object);
 }

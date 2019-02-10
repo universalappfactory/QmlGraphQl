@@ -98,10 +98,10 @@ void GraphQlWebsocketConnection::onTextMessageReceived(QString message)
 
 void GraphQlWebsocketConnection::emitDataReceived(const OperationMessage &message)
 {
-    qDebug() << message.toJson();
+    qDebug() << "emitDataReceived:" << message.toJson();
 
-    QJsonDocument doc = QJsonDocument::fromVariant(message.payload());
-    emit dataReceived(doc.object().toVariantMap());
+    //QJsonDocument doc = QJsonDocument::fromVariant(message.payload());
+    emit dataReceived(message.toVariantMap());
 }
 
 void GraphQlWebsocketConnection::onError(QAbstractSocket::SocketError socktError)

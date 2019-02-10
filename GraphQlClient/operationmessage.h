@@ -19,6 +19,7 @@
 #include <QString>
 #include <QVariant>
 #include <QJsonObject>
+#include <QJsonDocument>
 
 class OperationMessage
 {
@@ -41,10 +42,12 @@ public:
     static const QString GQL_COMPLETE;
 
     QString toJson() const;
+    QJsonDocument toJsonDocument() const;
     QString id() const;
     QString type() const;
     QJsonObject payload() const;
     QByteArray toByteArray() const;
+    QVariantMap toVariantMap() const;
 
     static OperationMessage fromJson(const QByteArray &value);
     static OperationMessage ConnectionInitMessage();

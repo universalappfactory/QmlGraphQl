@@ -21,6 +21,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QByteArray>
+#include <QUuid>
 #include "queryrequestdto.h"
 
 GraphQlConnection::GraphQlConnection() :
@@ -42,17 +43,19 @@ GraphQlConnection::~GraphQlConnection()
     delete m_httpConnection;
 }
 
-void GraphQlConnection::query(const QString &query)
+QString GraphQlConnection::query(const QString &query)
 {
     if (websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
         qDebug() << "connection is not acknowledged, doing http request";
 
         m_httpConnection->sendMessage(QueryRequestDto(query));
-        return;
+        return QUuid().toString(); //http connections dont't return an id at the moment
     }
 
     qDebug() << "query: " << query;
-    m_websocketConnection->sendMessage(OperationMessage::ConnectionStartMessage(QueryRequestDto(query).toJsonObject()));
+    OperationMessage operationMessage = OperationMessage::ConnectionStartMessage(QueryRequestDto(query).toJsonObject());
+    m_websocketConnection->sendMessage(operationMessage);
+    return operationMessage.id();
 }
 
 void GraphQlConnection::mutate(const QString &mutation)

@@ -18,7 +18,8 @@ Window {
         var query = txtSearchQuery.text;
         if (!isNullOrWhitespace(query)) {
             console.log("execute query: " + query);
-            gql.query(query);
+            var queryId = gql.query(query);
+            console.log("query id is: " + queryId);
         } else {
             txtResult.text = "";
         }
@@ -26,21 +27,36 @@ Window {
 
     GraphQlConnection {
         id: gql
-        url: "http://localhost:9000/graphql"
-        //url: "http://localhost:9000/"
+        url: "ws://localhost:9000/websocket"  //using a websocket connection
+        //url: "http://localhost:9000/graphql"    //using a http connection
+
+        //if you are using a websocket connection use this to open the connection
+
+        Component.onCompleted: {
+            console.log("completed");
+            open();
+        }
 
         onDataReceived: {
             //result data is available as json object
             var resultAsJson = JSON.stringify(data, /*replacer*/ null, /*spacing*/ 2);
             console.log(resultAsJson)
+            console.log("response from query with id:" + data.id);
 
-            //e.g. you can access data from the example query like this
-            //console.log(data.data.allFilms.films[0].title);
+            if (data.payload.errors) {
+                console.log("having errors");
+                txtResult.text = resultAsJson
+            } else {
+                console.log(data.payload.data.hero.name);
 
-            //or like this
-            //console.log(data["data"]["allFilms"]["films"][0]["title"])
+                //e.g. you can access data from the example query like this
+                //console.log(data.payload.data.allFilms.films[0].title);
 
-            txtResult.text = resultAsJson
+                //or like this
+                //console.log(data["payload"]["data"]["allFilms"]["films"][0]["title"])
+
+                txtResult.text = resultAsJson
+            }
         }
 
         onError: {
@@ -75,7 +91,7 @@ Window {
                     font.pixelSize: 14
                     color: "#2e2e34"
                     placeholderText: "Enter your query here"
-                    text: "query { allFilms {  films {title},  pageInfo {hasNextPage}}}"
+                    text: "query {hero {name}}"
                     Keys.onReturnPressed: executeSearch();
                 }
             }
