@@ -61,7 +61,22 @@ Module {
         }
         Method {
             name: "query"
+            type: "string"
             Parameter { name: "query"; type: "string" }
+        }
+        Method {
+            name: "subscribe"
+            type: "string"
+            Parameter { name: "subscription"; type: "string" }
+        }
+        Method {
+            name: "unsubscribe"
+            Parameter { name: "subscriptionId"; type: "string" }
+        }
+        Method {
+            name: "mutate"
+            type: "string"
+            Parameter { name: "mutation"; type: "string" }
         }
         Method { name: "open" }
     }
