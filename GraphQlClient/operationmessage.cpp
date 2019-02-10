@@ -24,10 +24,10 @@ const QString OperationMessage::GQL_CONNECTION_KEEP_ALIVE = QString("ka");
 const QString OperationMessage::GQL_CONNECTION_INIT = QString("connection_init");
 const QString OperationMessage::GQL_CONNECTION_ACK = QString("connection_ack");
 const QString OperationMessage::GQL_START = QString("start");
+const QString OperationMessage::GQL_STOP = QString("stop");
 const QString OperationMessage::GQL_DATA = QString("data");
 const QString OperationMessage::GQL_ERROR = QString("error");
 const QString OperationMessage::GQL_COMPLETE = QString("complete");
-
 
 QString OperationMessage::id() const
 {
@@ -75,6 +75,11 @@ OperationMessage OperationMessage::ConnectionStartMessage(const QJsonObject &pay
 {
     QUuid id = QUuid::createUuid();
     return OperationMessage(id.toString(),OperationMessage::GQL_START, payload);
+}
+
+OperationMessage OperationMessage::ConnectionStopMessage(const QString connectionId)
+{
+    return OperationMessage(connectionId,OperationMessage::GQL_STOP);
 }
 
 OperationMessage::OperationMessage(const QString &id,const QString &type,const QJsonObject &payload) :

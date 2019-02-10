@@ -15,7 +15,6 @@
     along with QmlGraphQl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "graphqlconnection.h"
 #include <QtCore/QDebug>
 #include <QAbstractSocket>
 #include <QJsonObject>
@@ -23,6 +22,9 @@
 #include <QByteArray>
 #include <QUuid>
 #include "queryrequestdto.h"
+#include "graphqlconnection.h"
+#include "graphqlerror.h"
+
 
 GraphQlConnection::GraphQlConnection() :
     m_url(QString()),
@@ -49,7 +51,7 @@ QString GraphQlConnection::query(const QString &query)
         qDebug() << "connection is not acknowledged, doing http request";
 
         m_httpConnection->sendMessage(QueryRequestDto(query));
-        return QUuid().toString(); //http connections dont't return an id at the moment
+        return emptyUid(); //http connections dont't return an id at the moment
     }
 
     qDebug() << "query: " << query;
@@ -58,17 +60,39 @@ QString GraphQlConnection::query(const QString &query)
     return operationMessage.id();
 }
 
-void GraphQlConnection::mutate(const QString &mutation)
+QString GraphQlConnection::subscribe(const QString &subscription)
+{
+    if (websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
+        emitWebsocketConnectionRequiredError();
+        return emptyUid();
+    }
+
+    qDebug() << "subscribe: " << subscription;
+    OperationMessage operationMessage = OperationMessage::ConnectionStartMessage(QueryRequestDto(subscription).toJsonObject());
+    m_websocketConnection->sendMessage(operationMessage);
+    return operationMessage.id();
+}
+
+void GraphQlConnection::unsubscribe(const QString &subscriptionId)
+{
+    qDebug() << "unsubscribe: " << subscriptionId;
+    OperationMessage operationMessage = OperationMessage::ConnectionStopMessage(subscriptionId);
+    m_websocketConnection->sendMessage(operationMessage);
+}
+
+QString GraphQlConnection::mutate(const QString &mutation)
 {
     if (websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
         qDebug() << "connection is not acknowledged, doing http request";
 
         m_httpConnection->sendMessage(QueryRequestDto(mutation));
-        return;
+        return emptyUid();
     }
 
     qDebug() << "mutate: " << mutation;
-    m_websocketConnection->sendMessage(OperationMessage::ConnectionStartMessage(QueryRequestDto(mutation).toJsonObject()));
+    OperationMessage operationMessage = OperationMessage::ConnectionStartMessage(QueryRequestDto(mutation).toJsonObject());
+    m_websocketConnection->sendMessage(operationMessage);
+    return operationMessage.id();
 }
 
 void GraphQlConnection::open()
@@ -110,6 +134,16 @@ void GraphQlConnection::setUrl(const QString &url)
 void GraphQlConnection::onStateChanged(GraphQlWebsocketConnection::ConnectionState state)
 {
     emit websocketConnectionStateChanged(static_cast<WebSocketConnectionState>(state));
+}
+
+QString GraphQlConnection::emptyUid()
+{
+    return QUuid().toString();
+}
+
+void GraphQlConnection::emitWebsocketConnectionRequiredError()
+{
+    emit error(GraphQlError("a websocket open websocket-connection is required.").toVariantmap());
 }
 
 

@@ -9,7 +9,7 @@ But querying works pretty good at the moment.
 
 The client supports http and websocket connections.
 
-The websocket connection was implemented against a [HotChocolate Server](https://github.com/ChilliCream/hotchocolate)
+The websocket connection was implemented against a [HotChocolate Server](https://github.com/ChilliCream/hotchocolate) and also against the Apollo GraphQL star wars sample.
 
 Next I'd like to implement mutations and subscriptions.
 
@@ -74,7 +74,9 @@ The first one uses the [SWAPI GraphQL Wrapper](https://github.com/graphql/swapi-
 
 The second one the [Apollo GraphQL server example](https://github.com/apollographql/graphql-server-example)
 
-And the third one the [Apollo GraphQL star-wars server example](https://github.com/apollographql/starwars-server)
+And the third one the [Apollo GraphQL star-wars server example]
+(https://github.com/apollographql/starwars-server)
+I use this one for all examples.
 
 
 ```Bash
@@ -130,6 +132,27 @@ But in order to have a distinction in the ui there is also a "mutate" function.
 
     ...
 ```
+
+# Subscriptions
+
+Like mutation queries a subscription query is the same as q "normal" query.
+But the QML client also has a subscribe method.
+You need a websocket connection in order to receive subscriptions.
+Every subscription returns an id. If you are not longer interested in an specific subscription you can unsubscribe with that id.
+
+```QML
+    ...
+    
+    var subscriptionId = gql.subscribe("subscription {reviewAdded(episode: EMPIRE){stars}}")
+
+    ...
+
+    //unsubscribe
+    gql.unsubscribe(isubscriptionIdd);
+
+    ...
+```
+
 
 
 # Issues

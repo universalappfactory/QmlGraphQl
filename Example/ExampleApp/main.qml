@@ -9,20 +9,60 @@ Window {
     width: 640
     height: 480
     title: qsTr("GraphQl Example Client")
+    property var subscriptions: [];
+
+    /*
+        Example queries for the apollo star wars server
+
+        Query:
+            query {hero {name}}
+
+        Mutation:
+            mutation {createReview(episode: EMPIRE, review: {stars: 3}){episode,stars}}
+
+        Subscription:
+            subscription {reviewAdded(episode: EMPIRE){stars}}
+
+    */
+
 
     function isNullOrWhitespace( input ) {
       return !input || !input.trim();
     }
 
-    function executeSearch() {
+    function executeQuery() {
         var query = txtSearchQuery.text;
         if (!isNullOrWhitespace(query)) {
             console.log("execute query: " + query);
-            var queryId = gql.query(query);
-            console.log("query id is: " + queryId);
+            txtResult.text = "";
+
+            if (query.indexOf("mutation") !== -1) {
+                var mutationId = gql.mutate(query);
+                console.log("mutation id is: " + mutationId);
+            } else if (query.indexOf("subscription" !== -1)) {
+                var subscriptionId = gql.query(query);
+                console.log("subscription id is: " + subscriptionId);
+                subscriptions.push(subscriptionId);
+                console.log(subscriptions.length)
+                txtResult.text = "subscribed " + query;
+            } else {
+                var queryId = gql.query(query);
+                console.log("query id is: " + queryId);
+            }
         } else {
             txtResult.text = "";
         }
+    }
+
+    function unsubscribeAllSubscriptions() {
+        console.log(subscriptions.length);
+        for(var i = 0; i < subscriptions.length; ++i) {
+            var id = subscriptions[i];
+            console.log("unsubscribe " + id);
+            gql.unsubscribe(id);
+        }
+        subscriptions = [];
+        txtResult.text = "unsubscribed from all subscriptions";
     }
 
     GraphQlConnection {
@@ -31,7 +71,6 @@ Window {
         //url: "http://localhost:9000/graphql"    //using a http connection
 
         //if you are using a websocket connection use this to open the connection
-
         Component.onCompleted: {
             console.log("completed");
             open();
@@ -47,15 +86,22 @@ Window {
                 console.log("having errors");
                 txtResult.text = resultAsJson
             } else {
-                console.log(data.payload.data.hero.name);
+
+                //name from query: query {hero {name}}
+                //console.log(data.payload.data.hero.name);
 
                 //e.g. you can access data from the example query like this
                 //console.log(data.payload.data.allFilms.films[0].title);
 
                 //or like this
                 //console.log(data["payload"]["data"]["allFilms"]["films"][0]["title"])
-
-                txtResult.text = resultAsJson
+                console.log(subscriptions.indexOf(data.id));
+                if (subscriptions.indexOf(data.id) > 0) {
+                    console.log("received a subscription");
+                    txtResult.text = "=== Data from subscription: ===\n\n" +  resultAsJson + "\n\n=== End data from subscription";
+                } else {
+                    txtResult.text = resultAsJson
+                }
             }
         }
 
@@ -100,22 +146,15 @@ Window {
                 text: "Execute query"
                 Layout.preferredHeight: txtSearchQuery.height
                 font.pixelSize: 14
-                onClicked: executeSearch();
+                onClicked: executeQuery();
             }
 
-            //Example for a mutation (this is a query for the apollo graphql starwars server)
-            /*
             Button {
-                text: "Mutate"
+                text: "Unsubscribe All"
                 Layout.preferredHeight: txtSearchQuery.height
                 font.pixelSize: 14
-                onClicked: {
-                    var mutation = "mutation {createReview(episode: EMPIRE, review: {stars: 3}){episode,stars}}";
-                    console.log("mutate: " + mutation);
-                    gql.mutate(mutation);
-                }
+                onClicked: unsubscribeAllSubscriptions();
             }
-            */
 
         } //RowLayout
 

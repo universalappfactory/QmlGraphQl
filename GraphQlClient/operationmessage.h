@@ -40,6 +40,7 @@ public:
     static const QString GQL_DATA;
     static const QString GQL_ERROR;
     static const QString GQL_COMPLETE;
+    static const QString GQL_STOP;
 
     QString toJson() const;
     QJsonDocument toJsonDocument() const;
@@ -52,6 +53,7 @@ public:
     static OperationMessage fromJson(const QByteArray &value);
     static OperationMessage ConnectionInitMessage();
     static OperationMessage ConnectionStartMessage(const QJsonObject &payload);
+    static OperationMessage ConnectionStopMessage(const QString connectionId);
 };
 
 #endif // OPERATIONMESSAGE_H
