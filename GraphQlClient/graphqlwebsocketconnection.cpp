@@ -42,7 +42,7 @@ GraphQlWebsocketConnection::GraphQlWebsocketConnection(QObject *parent) : QObjec
 {
     connect(&m_webSocket, &QWebSocket::connected, this, &GraphQlWebsocketConnection::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &GraphQlWebsocketConnection::closed);
-    connect(&m_webSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SIGNAL(error(QAbstractSocket::SocketError)));
+    connect(&m_webSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
     connect(&m_webSocket, &QWebSocket::textMessageReceived, this, &GraphQlWebsocketConnection::onTextMessageReceived);
 }
 
