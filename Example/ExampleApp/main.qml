@@ -39,11 +39,10 @@ Window {
             if (query.indexOf("mutation") !== -1) {
                 var mutationId = gql.mutate(query);
                 console.log("mutation id is: " + mutationId);
-            } else if (query.indexOf("subscription" !== -1)) {
+            } else if (query.indexOf("subscription") !== -1) {
                 var subscriptionId = gql.query(query);
                 console.log("subscription id is: " + subscriptionId);
                 subscriptions.push(subscriptionId);
-                console.log(subscriptions.length)
                 txtResult.text = "subscribed " + query;
             } else {
                 var queryId = gql.query(query);
