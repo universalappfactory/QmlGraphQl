@@ -92,10 +92,10 @@ docker build ApolloStarWarsGraphQLDocker -t apollo/starwars
 docker run -p 9000:8080 graphql/swapi
 
 #or (graphiql is available under localhost:9000/playground, use localhost:9000 as url for the client)
-docker run -p 9000:4000 graphql/apollo
+docker run -p 9000:8080 graphql/apollo
 
 #or (graphiql is available under http://localhost:9000/graphql, use http://localhost:9000/graphql as url for the client)
-docker run -p 9000:4000 apollo/starwars
+docker run -p 9000:8080 apollo/starwars
 
 ```
 
