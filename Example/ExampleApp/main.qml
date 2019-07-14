@@ -10,6 +10,7 @@ Window {
     height: 480
     title: qsTr("GraphQl Example Client")
     property var subscriptions: [];
+    property bool isDataLoading: false;
 
     /*
         Example queries for the apollo star wars server
@@ -33,6 +34,7 @@ Window {
     function executeQuery() {
         var query = txtSearchQuery.text;
         if (!isNullOrWhitespace(query)) {
+            isDataLoading = true;
             console.log("execute query: " + query);
             txtResult.text = "";
 
@@ -44,6 +46,7 @@ Window {
                 console.log("subscription id is: " + subscriptionId);
                 subscriptions.push(subscriptionId);
                 txtResult.text = "subscribed " + query;
+                isDataLoading = false;
             } else {
                 var queryId = gql.query(query);
                 console.log("query id is: " + queryId);
@@ -66,8 +69,8 @@ Window {
 
     GraphQlConnection {
         id: gql
-        url: "ws://localhost:9000/websocket"  //using a websocket connection
-        //url: "http://localhost:9000/graphql"    //using a http connection
+        wsUrl: "ws://localhost:9500/websocket"  //websocket connection if available
+        url: "http://localhost:9500/graphql"    //using a http connection
 
         //if you are using a websocket connection use this to open the connection
         Component.onCompleted: {
@@ -77,6 +80,7 @@ Window {
 
         onDataReceived: {
             //result data is available as json object
+            isDataLoading = false;
             var resultAsJson = JSON.stringify(data, /*replacer*/ null, /*spacing*/ 2);
             console.log(resultAsJson)
             console.log("response from query with id:" + data.id);
@@ -105,6 +109,7 @@ Window {
         }
 
         onError: {
+            isDataLoading = false;
             var resultAsJson = JSON.stringify(error, /*replacer*/ null, /*spacing*/ 2);
             console.log(resultAsJson)
 
@@ -191,6 +196,11 @@ Window {
                     }
                 }
             }//ColumnLayout
+        }
+
+        BusyIndicator {
+            anchors.centerIn: parent
+            running: isDataLoading
         }
 
     }//ColumnLayout

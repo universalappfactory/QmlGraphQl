@@ -46,10 +46,12 @@ public:
     Q_INVOKABLE QString mutate(const QString &mutation);
     Q_INVOKABLE void open();
     Q_PROPERTY(QString url READ url WRITE setUrl NOTIFY urlChanged)
+    Q_PROPERTY(QString wsUrl READ wsUrl WRITE setWsUrl NOTIFY wsUrlChanged)
     Q_PROPERTY(WebSocketConnectionState websocketConnectionState READ websocketConnectionState NOTIFY websocketConnectionStateChanged)
     Q_PROPERTY(bool isConnected READ isConnected)
 
     QString url() const;
+    QString wsUrl() const;
 
     WebSocketConnectionState websocketConnectionState() const;
     bool isConnected() const;
@@ -58,7 +60,7 @@ public slots:
     void onConnectionError(GraphQlError err);
     void setUrl(const QString &url);
     void onStateChanged(GraphQlWebsocketConnection::ConnectionState state);
-
+    void setWsUrl(QString wsUrl);
 
 Q_SIGNALS:
     void closed();
@@ -66,6 +68,7 @@ Q_SIGNALS:
     void dataReceived(QVariantMap data);
     void websocketConnectionStateChanged(WebSocketConnectionState state);
     void error(QVariantMap error);
+    void wsUrlChanged(QString wsUrl);
 
 private:
      QString m_url;
@@ -74,6 +77,7 @@ private:
      void emitDataReceived(const OperationMessage &message);
      QString emptyUid();
      void emitWebsocketConnectionRequiredError();
+     QString m_wsUrl;
 };
 
 #endif // GRAPHQLWEBSOCKET_H

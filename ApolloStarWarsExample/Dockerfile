@@ -1,7 +1,8 @@
 FROM node
 
 WORKDIR /app
-RUN git clone https://github.com/apollographql/starwars-server
+COPY starwars.tar.gz /app/starwars.tar.gz
+RUN tar -xzf starwars.tar.gz
 
 WORKDIR /app/starwars-server
 
@@ -11,4 +12,3 @@ ENV PORT=8080
 EXPOSE 8080
 
 CMD [ "npm", "start" ]
-

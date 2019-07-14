@@ -45,12 +45,14 @@ void GraphQlHttpConnection::setUrl(const QString &url)
     m_url = url;
 }
 
-void GraphQlHttpConnection::sendMessage(const QueryRequestDto &message)
+QString GraphQlHttpConnection::sendMessage(const QueryRequestDto &message)
 {
     QNetworkRequest request(m_url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader,"application/json");
-    //request.setRawHeader(QByteArray("X-Request-ID"),QByteArray("requestId"));
+    QUuid requestId = QUuid::createUuid();
+    request.setRawHeader(QByteArray("X-Request-ID"), requestId.toByteArray());
     m_networkAccessManager->post(request, message.toByteArray());
+    return requestId.toString();
 }
 
 void GraphQlHttpConnection::onFinished(QNetworkReply *reply)
@@ -62,13 +64,16 @@ void GraphQlHttpConnection::onFinished(QNetworkReply *reply)
     } else {
         QByteArray data = reply->readAll();
 
+        QVariant requestIdHeader = reply->request().rawHeader(QByteArray("X-Request-ID"));
+        qDebug() << "requestHeader" << requestIdHeader.toString();
+
         //create a json document from response
         QJsonDocument response = QJsonDocument::fromJson(data);
 
         //create a new JsonDocument which is compatible to a OperationMessage
         //this is required in order to make http and websocket calls compatible
         QJsonObject obj = QJsonObject();
-        obj.insert("id",QUuid().toString()); //http queries don't have id's at the moment
+        obj.insert("id", requestIdHeader.toString());
         obj.insert("payload",QJsonValue(response.object()));
         obj.insert("type","data");
 

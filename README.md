@@ -11,7 +11,15 @@ The client supports http and websocket connections.
 
 The websocket connection was implemented against a [HotChocolate Server](https://github.com/ChilliCream/hotchocolate) and also against the Apollo GraphQL star wars sample.
 
-Next I'd like to implement mutations and subscriptions.
+Mutations and subscriptions are implemented as well.
+
+Https and wss works as well if your qt-installation does support this.
+
+# Latest Changes
+
+- Added extra property for websocket connection (wsUrl)
+- all queries are returning an id (var id = gql.query(...))
+
 
 # Usage
 
@@ -27,6 +35,7 @@ import GraphQlClient 1.0
     GraphQlConnection {
         id: gql
         url: "http://localhost:9000/"
+        wsUrl: "ws://localhost:9500/websocket"  //websocket connection if available
 
         onDataReceived: {
             //result data is available as json object
@@ -72,32 +81,31 @@ If you want to start a graphql example server locally using docker, you may use 
 
 The first one uses the [SWAPI GraphQL Wrapper](https://github.com/graphql/swapi-graphql)
 
-The second one the [Apollo GraphQL server example](https://github.com/apollographql/graphql-server-example)
+As the examples from [Apollographql](https://github.com/apollographql) were changed lately and the starwars sample is not available anymore, I made a docker file for the [Apollo Fullstack Example](https://github.com/apollographql/fullstack-tutorial).
 
-And the third one the [Apollo GraphQL star-wars server example]
-(https://github.com/apollographql/starwars-server)
-I use this one for all examples.
-
+But there aren't subscriptions yet, so I also added the old starwars-example to the source directory (starwars.tar.gz).
 
 ```Bash
+
+## Build Containers ##
 #go to the root directory of the repository
 docker build SwapiDocker -t graphql/swapi
 
 #or
-docker build ApolloGraphQLDocker -t graphql/apollo
+docker build ApolloFullStackServerExampleDocker -t graphql/apolloserver
 
 #or
-docker build ApolloStarWarsGraphQLDocker -t apollo/starwars
+docker build ApolloStarWarsExample -t apollo/starwars
 
-
+## Run Container ##
 #run (graphiql is available under localhost:9000/playground, use localhost:9000 as url for the client)
 docker run -p 9000:8080 graphql/swapi
 
-#or (graphiql is available under localhost:9000/playground, use localhost:9000 as url for the client)
-docker run -p 9000:8080 graphql/apollo
+#or (graphiql is available under http://localhost:9500/graphql, use  http://localhost:9500/ as url for the client)
+docker run -p 9000:8080 ApolloStarWarsExample -t apollo/starwars
 
 #or (graphiql is available under http://localhost:9000/graphql, use http://localhost:9000/graphql as url for the client)
-docker run -p 9000:8080 apollo/starwars
+docker run -p 9000:4000 graphql/apolloserver
 
 ```
 

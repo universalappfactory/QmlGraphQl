@@ -47,14 +47,13 @@ GraphQlConnection::~GraphQlConnection()
 
 QString GraphQlConnection::query(const QString &query)
 {
-    if (websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
-        qDebug() << "connection is not acknowledged, doing http request";
+    qDebug() << "query: " << query;
 
-        m_httpConnection->sendMessage(QueryRequestDto(query));
-        return emptyUid(); //http connections dont't return an id at the moment
+    if (wsUrl().isEmpty() || websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
+        qDebug() << "websocket not available, doing http request";
+        return m_httpConnection->sendMessage(QueryRequestDto(query));
     }
 
-    qDebug() << "query: " << query;
     OperationMessage operationMessage = OperationMessage::ConnectionStartMessage(QueryRequestDto(query).toJsonObject());
     m_websocketConnection->sendMessage(operationMessage);
     return operationMessage.id();
@@ -82,14 +81,13 @@ void GraphQlConnection::unsubscribe(const QString &subscriptionId)
 
 QString GraphQlConnection::mutate(const QString &mutation)
 {
-    if (websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
-        qDebug() << "connection is not acknowledged, doing http request";
+    qDebug() << "mutate: " << mutation;
 
-        m_httpConnection->sendMessage(QueryRequestDto(mutation));
-        return emptyUid();
+    if (wsUrl().isEmpty() || websocketConnectionState() !=  WebSocketConnectionState::Acknowledged) {
+        qDebug() << "websocket not available, doing http request";
+        return m_httpConnection->sendMessage(QueryRequestDto(mutation));
     }
 
-    qDebug() << "mutate: " << mutation;
     OperationMessage operationMessage = OperationMessage::ConnectionStartMessage(QueryRequestDto(mutation).toJsonObject());
     m_websocketConnection->sendMessage(operationMessage);
     return operationMessage.id();
@@ -103,6 +101,11 @@ void GraphQlConnection::open()
 QString GraphQlConnection::url() const
 {
     return m_url;
+}
+
+QString GraphQlConnection::wsUrl() const
+{
+    return m_wsUrl;
 }
 
 GraphQlConnection::WebSocketConnectionState GraphQlConnection::websocketConnectionState() const
@@ -126,9 +129,18 @@ void GraphQlConnection::setUrl(const QString &url)
         return;
 
     m_url = url;
-    m_websocketConnection->setUrl(url);
     m_httpConnection->setUrl(url);
     emit urlChanged(m_url);
+}
+
+void GraphQlConnection::setWsUrl(QString wsUrl)
+{
+    if (m_wsUrl == wsUrl)
+        return;
+
+    m_wsUrl = wsUrl;
+    m_websocketConnection->setUrl(m_wsUrl);
+    emit wsUrlChanged(m_wsUrl);
 }
 
 void GraphQlConnection::onStateChanged(GraphQlWebsocketConnection::ConnectionState state)

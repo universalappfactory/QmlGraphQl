@@ -32,7 +32,7 @@ public:
 
     QString url() const;
     void setUrl(const QString &url);
-    void sendMessage(const QueryRequestDto &message);
+    QString sendMessage(const QueryRequestDto &message);
 
 signals:
     void dataReceived(QVariantMap data);
