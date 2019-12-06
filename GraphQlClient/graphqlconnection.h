@@ -47,11 +47,13 @@ public:
     Q_INVOKABLE void open();
     Q_PROPERTY(QString url READ url WRITE setUrl NOTIFY urlChanged)
     Q_PROPERTY(QString wsUrl READ wsUrl WRITE setWsUrl NOTIFY wsUrlChanged)
+    Q_PROPERTY(QString authorizationHeader READ authorizationHeader WRITE setAuthorizationHeader NOTIFY authorizationHeaderChanged)
     Q_PROPERTY(WebSocketConnectionState websocketConnectionState READ websocketConnectionState NOTIFY websocketConnectionStateChanged)
     Q_PROPERTY(bool isConnected READ isConnected)
 
     QString url() const;
     QString wsUrl() const;
+    QString authorizationHeader() const;
 
     WebSocketConnectionState websocketConnectionState() const;
     bool isConnected() const;
@@ -61,6 +63,7 @@ public slots:
     void setUrl(const QString &url);
     void onStateChanged(GraphQlWebsocketConnection::ConnectionState state);
     void setWsUrl(QString wsUrl);
+    void setAuthorizationHeader(QString authorizationHeader);
 
 Q_SIGNALS:
     void closed();
@@ -69,11 +72,13 @@ Q_SIGNALS:
     void websocketConnectionStateChanged(WebSocketConnectionState state);
     void error(QVariantMap error);
     void wsUrlChanged(QString wsUrl);
+    void authorizationHeaderChanged(QString authorizationHeader);
 
 private:
      QString m_url;
      GraphQlWebsocketConnection *m_websocketConnection;
      GraphQlHttpConnection *m_httpConnection;
+     QString m_authorizationHeader;
      void emitDataReceived(const OperationMessage &message);
      QString emptyUid();
      void emitWebsocketConnectionRequiredError();

@@ -32,6 +32,7 @@ public:
 
     QString url() const;
     void setUrl(const QString &url);
+    void setAuthorizationHeader(const QString &authorizationHeader);
     QString sendMessage(const QueryRequestDto &message);
 
 signals:
@@ -45,6 +46,7 @@ private Q_SLOTS:
 
 private:
     QString m_url;
+    QString m_authorizationHeader;
     QNetworkAccessManager *m_networkAccessManager;
 
 };

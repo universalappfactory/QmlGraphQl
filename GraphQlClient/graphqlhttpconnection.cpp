@@ -24,7 +24,8 @@
 #include <QUuid>
 
 GraphQlHttpConnection::GraphQlHttpConnection(QObject *parent) : QObject(parent),
-  m_networkAccessManager(new QNetworkAccessManager(this))
+    m_authorizationHeader(QString()),
+    m_networkAccessManager(new QNetworkAccessManager(this))
 {
     connect(m_networkAccessManager, &QNetworkAccessManager::finished,
             this, &GraphQlHttpConnection::onFinished);
@@ -45,10 +46,23 @@ void GraphQlHttpConnection::setUrl(const QString &url)
     m_url = url;
 }
 
+void GraphQlHttpConnection::setAuthorizationHeader(const QString &authorizationHeader)
+{
+    m_authorizationHeader = authorizationHeader;
+}
+
 QString GraphQlHttpConnection::sendMessage(const QueryRequestDto &message)
 {
     QNetworkRequest request(m_url);
     request.setHeader(QNetworkRequest::KnownHeaders::ContentTypeHeader,"application/json");
+
+    if (!m_authorizationHeader.isEmpty()) {
+        //request.setHeader(QNetworkRequest::KnownHeaders::,"application/json");
+        //request.setRawHeader("Authorization", m_authorizationHeader.toLocal8Bit());
+        qDebug() << "Authorization: " << m_authorizationHeader;
+        request.setRawHeader(QByteArray("Authorization"), m_authorizationHeader.toLocal8Bit());
+    }
+
     QUuid requestId = QUuid::createUuid();
     request.setRawHeader(QByteArray("X-Request-ID"), requestId.toByteArray());
     m_networkAccessManager->post(request, message.toByteArray());

@@ -21,6 +21,7 @@
 #include <QJsonDocument>
 #include <QByteArray>
 #include <QUuid>
+#include <QString>
 #include "queryrequestdto.h"
 #include "graphqlconnection.h"
 #include "graphqlerror.h"
@@ -29,7 +30,8 @@
 GraphQlConnection::GraphQlConnection() :
     m_url(QString()),
     m_websocketConnection(new GraphQlWebsocketConnection(this)),
-    m_httpConnection(new GraphQlHttpConnection(this))
+    m_httpConnection(new GraphQlHttpConnection(this)),
+    m_authorizationHeader(QString())
 {
     connect(m_websocketConnection, &GraphQlWebsocketConnection::dataReceived, this, &GraphQlConnection::dataReceived);
     connect(m_websocketConnection, &GraphQlWebsocketConnection::stateChanged, this, &GraphQlConnection::onStateChanged);
@@ -108,6 +110,11 @@ QString GraphQlConnection::wsUrl() const
     return m_wsUrl;
 }
 
+QString GraphQlConnection::authorizationHeader() const
+{
+    return m_authorizationHeader;
+}
+
 GraphQlConnection::WebSocketConnectionState GraphQlConnection::websocketConnectionState() const
 {
     return static_cast<WebSocketConnectionState>(m_websocketConnection->connectionState());
@@ -141,6 +148,16 @@ void GraphQlConnection::setWsUrl(QString wsUrl)
     m_wsUrl = wsUrl;
     m_websocketConnection->setUrl(m_wsUrl);
     emit wsUrlChanged(m_wsUrl);
+}
+
+void GraphQlConnection::setAuthorizationHeader(QString authorizationHeader)
+{
+    if (authorizationHeader == m_authorizationHeader)
+        return;
+
+    m_authorizationHeader = authorizationHeader;
+    m_httpConnection->setAuthorizationHeader(m_authorizationHeader);
+    emit authorizationHeaderChanged(m_authorizationHeader);
 }
 
 void GraphQlConnection::onStateChanged(GraphQlWebsocketConnection::ConnectionState state)
